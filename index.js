@@ -5,7 +5,8 @@ const app = express();
 
 
 const courses = [
-    { id: 1, name: 'My Math' },
+    { id: 3, name: 'My Math' },
+    { id: 1, name: 'Mahasen code' },
     { id: 2, name: 'Physics' }
 ];
 
