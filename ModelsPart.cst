@@ -1,4 +1,4 @@
-﻿<%@ Template Language="C#" TargetLanguage="JavaScript" Description="Generates MODEL/COMPONENT/SERVICE for Nodes.js." %>
+﻿﻿<%@ Template Language="C#" TargetLanguage="JavaScript" Description="Generates MODEL/COMPONENT/SERVICE for Nodes.js." %>
 <%@ Assembly Name="SchemaExplorer" %> <%-- A dll library in either the same directory as the template or in the same directory as the CodeSmith executable --%>
 <%@ Property Name="SourceDatabase" Type="SchemaExplorer.DatabaseSchema" Category="Database" Description="Database that the documentation should be based on." %>
 <%@ Property Name="SourceTables" Type="SchemaExplorer.TableSchemaCollection" Category="Database" Description="Select a set of tables." %>
