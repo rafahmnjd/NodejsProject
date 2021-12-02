@@ -12,6 +12,7 @@ app.use((err, req, res, next) => {
 
 app.use('/api/author', require('./routers/author'));
 app.use('/api/users',require('./routers/users'));
+app.use('/api/roles',require('./routers/roles'));
 app.use('/',(req,res)=>{
     res.status(404).json("url not correct")
 })
