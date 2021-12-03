@@ -113,7 +113,7 @@ User.updateUser = (userId,user, result) => {
             result({ error: 'Record not found' }, null, 404);
         } else {
             cache.del(`user${userId}`);
-            result(null, { id: userId, userName: user.userName, email: user.email, password: user.password, roleId: user.roleId });
+            result(null, { id: userId, userName: user.userName, email: user.email, roleId: user.roleId });
         }
     });
 };
