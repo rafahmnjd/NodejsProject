@@ -106,7 +106,7 @@ User.register =(user,result)=>{
 // update
 
 User.updateUser = (userId,user, result) => {
-    pool.query(`UPDATE user  SET userName= "${user.userName}", email= "${user.email}", password= "${user.password}", roleId= "${user.roleId}" WHERE id = ${userId}`,(err, res) => {
+    pool.query(`UPDATE user  SET userName= "${user.userName}", email= "${user.email}", roleId= "${user.roleId}" WHERE id = ${userId}`,(err, res) => {
         if (err) {
             result(err, null,500);
         } else if(res.affectedRows===0){

@@ -48,13 +48,13 @@ router.get('/:id',auth, (req, res) => {
 // update
 
 router.put('/:id', auth,(req, res) => {
-    const user = { userName: req.body.userName, email: req.body.email };
+    const user = { userName: req.body.userName, email: req.body.email ,roleId: req.body.roleId};
     const userId = req.params.id;
 
     if (isNaN(userId)) { // isNaN (is Not a Number) is a function that verifies whether a given string is a normal number
         return res.status(400).send('id should be a number!');
     }
-    const { error } = ValidateModel(user);
+    const { error } = validationUpdateUser(user);
     if (error) {
         return res.status(400).send({ error: error });
     }
@@ -234,8 +234,9 @@ function validationChangePassword(user){
 
 function validationUpdateUser(user){
     const schema = Joi.object({
-     userName:Joi.string().min(3).max(50).required(),
-     email:Joi.string().email().required().max(150).min(10)  
+    userName:Joi.string().min(3).max(50).required(),
+    email: Joi.string().email().required().max(150).min(10),
+    roleId: Joi.number().integer().positive().required()
     });
     return schema.validate(user);
 
