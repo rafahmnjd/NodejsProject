@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 03, 2021 at 07:16 PM
+-- Generation Time: Dec 03, 2021 at 08:59 PM
 -- Server version: 10.4.13-MariaDB
 -- PHP Version: 7.4.7
 
@@ -32,15 +32,6 @@ CREATE TABLE `author` (
   `name` varchar(150) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `author`
---
-
-INSERT INTO `author` (`id`, `name`) VALUES
-(2, 'lolo'),
-(5, 'hamdi'),
-(6, 'Ahmad');
-
 -- --------------------------------------------------------
 
 --
@@ -55,14 +46,6 @@ CREATE TABLE `book` (
   `image` varchar(254) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `book`
---
-
-INSERT INTO `book` (`id`, `title`, `authorId`, `ISBN`, `image`) VALUES
-(6, 'first book', 6, '879', 'nopath'),
-(8, '7 book', 6, '8988', 'nopath');
-
 -- --------------------------------------------------------
 
 --
@@ -73,14 +56,6 @@ CREATE TABLE `role` (
   `id` int(11) NOT NULL,
   `roleName` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `role`
---
-
-INSERT INTO `role` (`id`, `roleName`) VALUES
-(1, 'admin'),
-(2, 'user');
 
 -- --------------------------------------------------------
 
@@ -96,13 +71,6 @@ CREATE TABLE `user` (
   `roleId` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `user`
---
-
-INSERT INTO `user` (`id`, `userName`, `email`, `password`, `roleId`) VALUES
-(1, 'soso', 'soso@gmail.com', '$2b$10$2vKk/1xRFK.aeanVVylx8.u1ZdhwCeekM1bbm2f5.SOoBzd9j4LOi', 1);
-
 -- --------------------------------------------------------
 
 --
@@ -110,18 +78,12 @@ INSERT INTO `user` (`id`, `userName`, `email`, `password`, `roleId`) VALUES
 --
 
 CREATE TABLE `userbooksfav` (
+  `id` int(11) NOT NULL,
   `userId` int(11) NOT NULL,
   `bookId` int(11) NOT NULL,
-  `favOrder` int(11) NOT NULL DEFAULT 1,
-  `isRead` tinyint(1) NOT NULL DEFAULT 0
+  `favOrder` int(11) NOT NULL,
+  `isRead` bit(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `userbooksfav`
---
-
-INSERT INTO `userbooksfav` (`userId`, `bookId`, `favOrder`, `isRead`) VALUES
-(1, 8, 0, 0);
 
 --
 -- Indexes for dumped tables
@@ -160,7 +122,8 @@ ALTER TABLE `user`
 -- Indexes for table `userbooksfav`
 --
 ALTER TABLE `userbooksfav`
-  ADD PRIMARY KEY (`userId`,`bookId`),
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_userId_bookId` (`userId`,`bookId`) USING BTREE,
   ADD KEY `userId` (`userId`),
   ADD KEY `bookId` (`bookId`);
 
@@ -172,25 +135,31 @@ ALTER TABLE `userbooksfav`
 -- AUTO_INCREMENT for table `author`
 --
 ALTER TABLE `author`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `book`
 --
 ALTER TABLE `book`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `role`
 --
 ALTER TABLE `role`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `userbooksfav`
+--
+ALTER TABLE `userbooksfav`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Constraints for dumped tables

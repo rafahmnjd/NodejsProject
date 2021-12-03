@@ -128,7 +128,7 @@ router.post('/register', auth, (req, res) => {
             res.status(500).json({ error: err });
         }
         else {
-            jwt.sign({ user }, secretKey, { expiresIn: '1d' }, (err, token) => {
+            jwt.sign(Object.assign({ id: user.id, email: user.email, userName: user.userName, roleId: user.roleId }), secretKey, { expiresIn: '1d' }, (err, token) => {
                 if(err) {
                     res.status(500).json({ error: err });
                 }

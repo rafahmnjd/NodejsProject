@@ -16,11 +16,13 @@ function auth(req,res,next){
             }
             else {
                 // const authData = authData;
-                console.log("roleId " +authData.roleId);
-                if(authData.roleId===1){
+                console.log("roleId " + authData.roleId);
+                if(authData.roleId == 1) {
+                    console.log("roleId " + authData.roleId);
+
                     next();
                 }
-                if(authData.roleId===2){
+                if(authData.roleId == 2){
                     const url = req.url;
                     const arrUrl = url.split('/');
                     const id = arrUrl[arrUrl.length-1];
