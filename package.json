@@ -11,8 +11,13 @@
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.0.1",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
+<<<<<<< HEAD
     "joi": "^17.5.0",
+=======
+    "joi": "^17.4.2",
+>>>>>>> 2f8e9987bfcbd9a3367f3d23708aa52663bf5573
     "jsonwebtoken": "^8.5.1",
     "mysql": "^2.18.1",
     "node-cache": "^5.1.2",
