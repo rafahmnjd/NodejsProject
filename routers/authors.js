@@ -2,6 +2,7 @@
 const Author = require('../models/author');
 const Joi = require('joi');
 const express = require('express');
+const auth = require('../middlewares/Authorization');
 const router = express.Router();
 
 
@@ -14,7 +15,7 @@ function ValidateModel(author) {
 
 
 //Get All
-router.get('/', (req, res) => {
+router.get('/', auth,(req, res) => {
     Author.getAll((err, authorRes) => {
         if (err) {
             res.status(500).json({ error: err });

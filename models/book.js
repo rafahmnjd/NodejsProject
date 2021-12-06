@@ -22,7 +22,22 @@ Book.getAll = (result) => {
         }
     });
 };
-
+//get book for user execpt his favbook
+// SELECT id,title FROM book b WHERE  EXISTS (SELECT * FROM user u WHERE  EXISTS(SELECT * FROM userbooksfav f WHERE f.userId!=u.id AND f.bookId != b.id))
+// SELECT id,title FROM book b WHERE NOT EXISTS (SELECT * FROM user u WHERE NOT EXISTS(SELECT * FROM userbooksfav f WHERE f.userId=u.id AND f.bookId = b.id))
+Book.getAllBookForUserExecptFav=(userId,result)=>{
+    var sql = `SELECT id,title FROM book b WHERE NOT EXISTS (SELECT distinct * FROM userbooksfav f WHERE f.userId =${userId} AND f.bookId = b.id)` ;
+    pool.query(sql,(err,res)=>{
+        if(err){
+            result(err,null)
+            
+        }
+        else{
+            
+            result(null,res);
+        }
+    });
+};
 //Get by Id
 Book.getById = (bookId, result) => {
     cacheValue = cache.get(`book${bookId}`);
@@ -46,7 +61,8 @@ Book.getById = (bookId, result) => {
 
 //create
 Book.createBook = (book, result) => {
-    pool.query("INSERT INTO book (title, authorId, ISBN, image) VALUES ( ? , ? , ? , ? )", [book.title, book.authorId, book.ISBN, book.image], (err, res) => {
+    
+    pool.query("INSERT INTO book (title, authorId, ISBN, image) VALUES ( ? , ? , ? , ? )", [book.title, book.authorId, book.ISBN,book.image], (err, res) => {
         if (err) {
             result(err, null);
         } else {
@@ -54,6 +70,39 @@ Book.createBook = (book, result) => {
         }
     });
 };
+
+
+// Book.createBook = (book, result) => {
+//     pool.getConnection((err,conn)=>{
+//         if(err){
+//             result(err,null,500);
+//         }
+//         else{
+//             var sql='SELECT * FROM book  WHERE image =?';
+//             conn.query(sql,inputValues.image_name,function (err, data, fields) {
+//             if(err) {
+//                 result(err,null,500);
+//             }
+//             if(data.length>1){
+//                 var msg = inputValues.image_name + " is already exist";
+//                 result(msg,null,400);
+//             }else{ 
+//                 // save users data into databases
+//                 var sql = 'INSERT INTO book SET image=?';
+//             conn.query(sql, inputValues, function (err, data) {
+//                 if (err) {
+//                     result(null,{ id: res.insertId, image: book.image },200)
+//                 }
+                
+//             });
+           
+        
+            
+//         }
+//     });
+    
+    
+// };
 
 // update
 
