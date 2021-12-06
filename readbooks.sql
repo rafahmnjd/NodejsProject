@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 03, 2021 at 09:03 PM
+-- Generation Time: Dec 03, 2021 at 09:10 PM
 -- Server version: 10.4.13-MariaDB
 -- PHP Version: 7.4.7
 
@@ -81,8 +81,8 @@ CREATE TABLE `userbooksfav` (
   `id` int(11) NOT NULL,
   `userId` int(11) NOT NULL,
   `bookId` int(11) NOT NULL,
-  `favOrder` int(11) NOT NULL,
-  `isRead` bit(1) NOT NULL
+  `favOrder` int(11) NOT NULL DEFAULT 0,
+  `isRead` bit(1) NOT NULL DEFAULT b'0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
