@@ -38,7 +38,7 @@ router.get('/:id', (req, res) => {
             res.status(500).json({ error: err });
         } else {
             if (Object.keys(author).length === 0) { // here user = {}
-                res.status(404).json("Not Found");
+                res.status(404).json("Record not found");
             } else {
                 res.status(200).json(author);
             }

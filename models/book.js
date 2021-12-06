@@ -153,3 +153,16 @@ Book.deleteBook = (bookId, result) => {
 
 
 module.exports = Book;
+
+Book.getImageById = (bookId, result) => {
+    pool.query(`select image from book where id=${bookId}`, (err, image) => {
+        if(err) {
+            result({ err: sqlMessage}, null);
+        }
+        else {
+            result(null, image[0]);
+        }
+    });
+}
+
+module.exports = Book;

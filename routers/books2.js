@@ -2,7 +2,6 @@ const Book = require('../models/book');
 const Joi = require('joi');
 const express = require('express');
 const router = express.Router();
-const auth = require('../middlewares/Authorization')
 const gzip = require('zlib').createGzip();
 const uzip = require('zlib').createGunzip();
 const multer = require("multer");
@@ -27,7 +26,7 @@ function ValidateModel(book) {
 
 
 //Get All
-router.get('/',(req, res) => {
+router.get('/', (req, res) => {
     Book.getAll((err, bookRes) => {
         if(err) {
             res.status(500).json({ error: err });
@@ -37,25 +36,10 @@ router.get('/',(req, res) => {
     });
 });
 
-//Get all book except favbook for user 
-router.get('/login/:id',(req, res) => {
-    const userId = req.params.id;
-    if (isNaN(userId)) // isNaN (is Not a Number) is a function that verifies whether a given string is a normal number
-        return res.status(400).send('id should be a number!');
 
-    Book.getAllBookForUserExecptFav(userId, (err, book) => {
-        if (err) {
-            res.status(500).json({ error: err });
-        } else {
-             res.status(200).json(book);
-                
-            }
-        
-    });
-});
 //Get by Id
 
-router.get('/:id',(req, res) => {
+router.get('/:id', (req, res) => {
     const id = req.params.id;
     if(isNaN(id)) // isNaN (is Not a Number) is a function that verifies whether a given string is a normal number
         return res.status(400).send('id should be a number!');
