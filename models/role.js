@@ -13,7 +13,7 @@ class Role {
 Role.getAll = (result) => {
     pool.query('SELECT * FROM role  ORDER BY id', (err, res) => {
         if (err) {
-            result(err, null);
+            result({ error: err.sqlMessage }, null);
         } else {
             result(null, res);
         }
@@ -26,7 +26,7 @@ Role.getById = (roleId, result) => {
     if (cacheValue == undefined) {
         pool.query('SELECT * FROM role WHERE id = ?', roleId, (err, res) => {
             if (err) {
-                result(err, null);
+                result({ error: err.sqlMessage }, null);
             } else {
                 if (res.length === 0) { // The role is not found for the given id
                     result(null, {});
@@ -45,7 +45,7 @@ Role.getById = (roleId, result) => {
 Role.createRole = (role, result) => {
     pool.query("INSERT INTO role (roleName) VALUES ( ? )", role.roleName, (err, res) => {
         if (err) {
-            result(err, null);
+            result({ error: err.sqlMessage }, null);
         } else {
             result(null, { id: res.insertId, roleName: role.roleName });
         }
@@ -57,7 +57,7 @@ Role.createRole = (role, result) => {
 Role.updateRole = (roleId,role, result) => {
     pool.query(`UPDATE role  SET roleName= "${role.roleName}" WHERE id = ${roleId}`,(err, res) => {
         if (err) {
-            result(err, null,500);
+            result({ error: err.sqlMessage }, null,500);
         } else if(res.affectedRows===0){
             result({ error: 'Record not found' }, null, 404);
         } else {
@@ -71,7 +71,7 @@ Role.updateRole = (roleId,role, result) => {
 Role.deleteRole = (roleId, result) => {
     pool.getConnection((conErr, connection) => {
         if (conErr) {
-            result(conErr, null, 500);
+            result({ error: conErr.sqlMessage }, null, 500);
         } else {
             connection.query(`SELECT * FROM role WHERE id = ${roleId}`, (selErr, selRes) => {
                 if (selErr) {

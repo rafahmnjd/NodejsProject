@@ -18,7 +18,7 @@ User.getAll = (result) => {
     if(cachValue == undefined) {
         pool.query('SELECT * FROM user  ORDER BY id', (err, res) => {
             if(err) {
-                result(err, null);
+                result({ error: err.sqlMessage }, null);
             } else {
                 cache.set(`allUsers`, res);
                 result(null, res);
@@ -35,7 +35,7 @@ User.getById = (userId, result) => {
     if(cachValue == undefined) {
         pool.query('SELECT * FROM user WHERE id = ?', userId, (err, res) => {
             if(err) {
-                result(err, null);
+                result({ error: err.sqlMessage }, null);
             } else {
                 if(res.length === 0) { // The user is not found for the given id
                     result(null, {});
@@ -55,7 +55,7 @@ User.getByName = (userName, result) => {
     if(cachValue == undefined) {
         pool.query(`SELECT * FROM user WHERE userName ="${userName}"`, (err, res) => {
             if(err) {
-                result(err, null, 500);
+                result({ error: err.sqlMessage }, null, 500);
 
             }
             else {
@@ -89,7 +89,7 @@ User.register = (user, result) => {
             //pool.query(`INSERT INTO user(userName,email,password)VALUES(?,?,?)`,(err,res)=>{
             pool.query(`INSERT INTO user SET userName ="${user.userName}",email="${user.email}",password ="${hash}",roleId =${user.roleId}`, (err, res) => {
                 if(err) {
-                    result(err, null);
+                    result({ error: err.sqlMessage }, null);
                     return;
                 }
                 else {
@@ -114,7 +114,7 @@ User.register = (user, result) => {
 User.updateUser = (userId, user, result) => {
     pool.query(`UPDATE user  SET userName= "${user.userName}", email= "${user.email}", roleId= "${user.roleId}" WHERE id = ${userId}`, (err, res) => {
         if(err) {
-            result(err, null, 500);
+            result({ error: err.sqlMessage }, null, 500);
         } else if(res.affectedRows === 0) {
             result({ error: 'Record not found' }, null, 404);
         } else {
@@ -128,7 +128,7 @@ User.updateUser = (userId, user, result) => {
 User.deleteUser = (userId, result) => {
     pool.getConnection((conErr, connection) => {
         if(conErr) {
-            result(conErr, null, 500);
+            result({ error: conErr.sqlMessage }, null, 500);
         } else {
             connection.query(`SELECT * FROM user WHERE id = ${userId}`, (selErr, selRes) => {
                 if(selErr) {
@@ -160,7 +160,7 @@ User.deleteUser = (userId, result) => {
 User.changePassword = (userId, newPassword, oldPassword, result) => {
     pool.getConnection((err, connection) => {
         if(err) {
-            result(err, null, 500);
+            result({ error: err.sqlMessage }, null, 500);
             return;
         }
         else {
@@ -229,7 +229,7 @@ User.getRole = (roleId, result) => {
     pool.query(`SELECT roleName FROM role r INNER JOIN user u ON r.id = u.roleId `, (err, res) => {
         if(err) {
 
-            result(err, null, 500);
+            result({ error: err.sqlMessage }, null, 500);
             return;
         }
         else {
@@ -249,7 +249,7 @@ User.getRole = (roleId, result) => {
 User.login = (userName, password, result) => {
     pool.query(`SELECT * FROM user WHERE userName ="${userName}"`, (err, res) => {
         if(err) {
-            result(err, null, 500);
+            result({ error: err.sqlMessage }, null, 500);
             return;
         }
         else {
@@ -284,7 +284,7 @@ User.ListFavorateBooks = (userId, result) => {
     if(cachValue == undefined) {
         pool.query(`select * from book b join userbooksfav ubf on ubf.bookId = b.id where ubf.userId=${userId}`, (Qerr, favBooks) => {
             if(Qerr) {
-                result(Qerr, null, 500);
+                result({ error: Qerr.sqlMessage }, null, 500);
             }
             else {
                 cache.set(`allFavBooks`, favBooks);

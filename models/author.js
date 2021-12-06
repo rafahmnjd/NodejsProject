@@ -13,7 +13,7 @@ class Author {
 Author.getAll = (result) => {
     pool.query('SELECT * FROM author  ORDER BY id', (err, res) => {
         if(err) {
-            result(err, null);
+            result({ error: err.sqlMessage }, null);
         } else {
             result(null, res);
         }
@@ -26,7 +26,7 @@ Author.getById = (authorId, result) => {
     if(cacheValue == undefined) {
         pool.query('SELECT * FROM author WHERE id = ?', authorId, (err, res) => {
             if(err) {
-                result(err, null);
+                result({ error: err.sqlMessage }, null);
             } else {
                 if(res.length === 0) { // The author is not found for the given id
                     result(null, {});
@@ -45,7 +45,7 @@ Author.getById = (authorId, result) => {
 Author.createAuthor = (author, result) => {
     pool.query("INSERT INTO author (name) VALUES ( ? )", author.name, (err, res) => {
         if(err) {
-            result(err, null);
+            result({ error: err.sqlMessage }, null);
         } else {
             result(null, { id: res.insertId, name: author.name });
         }
@@ -58,7 +58,7 @@ Author.updateAuthor = (authorId, author, result) => {
     pool.query(`UPDATE author  SET name= "${author.name}" WHERE id = ${authorId}`, (err, res) => {
         console.log(res.affectedRows);
         if(err) {
-            result(err, null, 500);
+            result({ error: err.sqlMessage }, null, 500);
         } else if(res.affectedRows===0){
             result({ error: 'Record not found' }, null, 404);
         } else {
@@ -72,7 +72,7 @@ Author.updateAuthor = (authorId, author, result) => {
 Author.deleteAuthor = (authorId, result) => {
     pool.getConnection((conErr, connection) => {
         if(conErr) {
-            result(conErr, null, 500);
+            result({ error: conErr.sqlMessage }, null, 500);
         } else {
             connection.query(`SELECT * FROM author WHERE id = ${authorId}`, (selErr, selRes) => {
                 if(selErr) {
