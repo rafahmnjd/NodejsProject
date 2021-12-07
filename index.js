@@ -28,6 +28,12 @@ app.use((err, req, res, next) => {
     res.status(500).send("Internal Server Error");
     next();
 });
+process.on('uncaughtException',function(err){
+    console.log('caught exception:',err);
+});
+setTimeout(function(){
+    console.log('this will still run');
+},500);
 
 app.use('/api/users', require('./routers/users'));
 app.use('/api/roles', require('./routers/roles'));
