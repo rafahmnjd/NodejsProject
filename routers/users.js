@@ -8,15 +8,7 @@ const secretKey = require('../shared/secretKey');
 const auth = require('../middlewares/Authorization');
 
 
-
-
-
-
 //Get All
-router.get('/',(req, res) => {
-    User.getAll((err, userRes) => {
-        if (err) {
-           res.status(500).json({ error: err });
 router.get('/', auth, (req, res) => {
     User.getAll((err, userRes) => {
         if(err) {
@@ -29,8 +21,6 @@ router.get('/', auth, (req, res) => {
 
 
 //Get by Id
-
-router.get('/:id',(req, res) => {
 router.get('/:id', auth, (req, res) => {
     const id = req.params.id;
     if(isNaN(id)) // isNaN (is Not a Number) is a function that verifies whether a given string is a normal number
@@ -50,12 +40,8 @@ router.get('/:id', auth, (req, res) => {
 });
 
 
-//create
-
 // update
 
-router.put('/:id',(req, res) => {
-    const user = { userName: req.body.userName, email: req.body.email };
 router.put('/:id', auth, (req, res) => {
     const user = { userName: req.body.userName, email: req.body.email, roleId: req.body.roleId };
     const userId = req.params.id;
@@ -64,7 +50,7 @@ router.put('/:id', auth, (req, res) => {
         return res.status(400).send('id should be a number!');
     }
     const { error } = validationUpdateUser(user);
-    if (error) {
+
     if(error) {
         return res.status(400).send({ error: error });
     }
@@ -83,7 +69,6 @@ router.put('/:id', auth, (req, res) => {
 
 //remove
 
-router.delete('/:id',(req, res) => {
 router.delete('/:id', auth, (req, res) => {
     const userId = req.params.id;
     if(isNaN(userId)) // isNaN (is Not a Number) is a function that verifies whether a given string is a normal number
@@ -104,7 +89,7 @@ router.delete('/:id', auth, (req, res) => {
 //     const {error}=validationUserName(req.params);
 //     if(error){
 //         res.status(400).send({error:error});
-       
+
 //     }
 //     User.getByName(userName,(err,user,code)=>{
 //         if(err){
@@ -120,6 +105,7 @@ router.delete('/:id', auth, (req, res) => {
 //         }
 //     });
 // });
+
 router.post('/login/:userName', auth, (req, res) => {
     const userName = req.params.userName;
     const { error } = validationUserName(req.params);
@@ -142,6 +128,8 @@ router.post('/login/:userName', auth, (req, res) => {
     });
 });
 
+
+//register (create)
 router.post('/register', auth, (req, res) => {
     const user = {
         userName: req.body.userName,
@@ -167,7 +155,7 @@ router.post('/register', auth, (req, res) => {
                 else {
                     res.status(201).json(token);
                 }
-                
+
             });
             // res.status(200).json(user);
         }
@@ -191,9 +179,9 @@ router.post('/login', (req, res) => {
         if(err) {
             res.status(code).json({ error: err });
         }
-        else{      
-            jwt.sign(Object.assign({id:user.id,email:user.email,userName:user.userName,roleId:user.roleId}),secretKey,{expiresIn:30000},(err,token)=>{
-                if(err){
+        // else{      
+        //     jwt.sign(Object.assign({id:user.id,email:user.email,userName:user.userName,roleId:user.roleId}),secretKey,{expiresIn:30000},(err,token)=>{
+        //         if(err){
         else {
             jwt.sign(Object.assign({ id: user.id, email: user.email, userName: user.userName, roleId: user.roleId }), secretKey, { "expiresIn": 600 }, (err, token) => {
                 if(err) {
@@ -214,13 +202,14 @@ router.post('/login', (req, res) => {
 
         }
     });
-    
+
 });
 
 //change password
-router.put('/login/:id',(req,res)=>{
+// router.put('/login/:id',(req,res)=>{
 router.put('/login/:id', auth, (req, res) => {
-    const userId = req.params.id;
+    // const userId = req.params.id;
+    const userId = req.userId;
     const oldPassword = req.body.oldPassword;
     const newPassword = req.body.newPassword;
     if(isNaN(userId)) {
@@ -244,6 +233,7 @@ router.put('/login/:id', auth, (req, res) => {
 
 
 });
+
 //get role
 // router.get('/login/:id',(req,res)=>{
 
@@ -268,28 +258,29 @@ router.put('/login/:id', auth, (req, res) => {
 // });
 
 
-router.get('/favbooks/',(req,res)=>{
-    User.getAllUsersFavBook((err,fav,code)=>{
-        if(err){
-            res.status(code).json({error:err});
+router.get('/favbooks/', (req, res) => {
+    User.getAllUsersFavBook((err, fav, code) => {
+        if(err) {
+            res.status(code).json({ error: err });
         }
-        else{
+        else {
             res.status(code).json(fav);
         }
     });
 });
 
-router.get('/favbook/:userId',(req,res)=>{
-    const userId = req.params.userId;
-    if(isNaN(userId)){
+router.get('/myFavbook/', (req, res) => {
+    // const userId = req.params.userId;
+    const userId = req.userId;
+    if(isNaN(userId)) {
         res.status(400).send('should be a number');
         return;
     }
-    User.getAllUserFavBook(userId,(err,favUser,code)=>{
-        if(err){
-            res.status(code).json({error:err});
+    User.getAllUserFavBook(userId, (err, favUser, code) => {
+        if(err) {
+            res.status(code).json({ error: err });
         }
-        else{
+        else {
             res.status(code).json(favUser);
         }
     });
@@ -311,40 +302,40 @@ router.get('/favbook/:userId',(req,res)=>{
 
 
 
-router.post('/favbook/:userId/:bookId',(req,res)=>{
-    const order = {userId:req.params.userId,bookId:req.params.bookId};
-    User.createUserFavBook(order,(err,favbook,code)=>{
-        if(err){
-            res.status(code).json({error:err});
+router.post('/favbook/book/:bookId',auth, (req, res) => {
+    const order = { userId: req.userId, bookId: req.params.bookId };
+    User.createUserFavBook(order, (err, favbook, code) => {
+        if(err) {
+            res.status(code).json({ error: err });
         }
-        else{
+        else {
             res.status(code).json(favbook);
         }
     });
 });
 
-router.put('/favbook/favOrder/:userId/:favId',(req,res)=>{
-    const order ={id:req.params.favId,userId:req.params.userId,favOrder:req.body.favOrder};
-   User.updateUserFavOrder(order,(err,favbook)=>{
-       if(err){
-            res.status(500).json({error:err});
-       }
-       else{
-           res.status(204).json(favbook);
-       }
-   }) ;
+router.put('/favbook/favOrder/:favId',auth, (req, res) => {
+    const order = { id: req.params.favId, userId: req.userId, favOrder: req.body.favOrder };
+    User.updateUserFavOrder(order, (err, favbook) => {
+        if(err) {
+            res.status(500).json({ error: err });
+        }
+        else {
+            res.status(204).json(favbook);
+        }
+    });
 });
 
-router.put('/favbook/isRead/:userId/:favId',(req,res)=>{
-    const order ={id:req.params.favId,userId:req.params.userId,isReadr:req.body.isRead};
-   User.updateUserIsRead(order,(err,favbook)=>{
-       if(err){
-            res.status(500).json({error:err});
-       }
-       else{
-           res.status(204).json(favbook);
-       }
-   }) ;
+router.put('/favbook/isRead/:favId',auth, (req, res) => {
+    const order = { id: req.params.favId, userId: requserId, isReadr: req.body.isRead };
+    User.updateUserIsRead(order, (err, favbook) => {
+        if(err) {
+            res.status(500).json({ error: err });
+        }
+        else {
+            res.status(204).json(favbook);
+        }
+    });
 });
 
 // router.delete('/login/favbook/:userId/:favId',(req,res)=>{
@@ -360,15 +351,20 @@ router.put('/favbook/isRead/:userId/:favId',(req,res)=>{
 //     });
 // });
 
-router.put('/favbook/:userId/:favId',(req,res)=>{
+router.put('/favbook/:favId',auth, (req, res) => {
     const favId = req.params.favId;
-    const userId = req.params.userId;
-    User.deleteUserFavBook(userId,favId,(err,favbook)=>{
-        if(err){
-            res.status(500).json({error:err});
+    const userId = req.userId;
+    User.deleteUserFavBook(userId, favId, (err, favbook) => {
+        if(err) {
+            res.status(500).json({ error: err });
         }
-        else{
+        else {
             res.status(204).json(favbook);
+        }
+    });
+});
+
+
 router.get('/login/:id', auth, (req, res) => {
 
     const roleId = req.params.id;
@@ -449,16 +445,16 @@ function validationUserName(userName) {
 
 // favorate books routes:
 
-router.get('/:userId/favBooks', (req, res) => {
-    const userId = req.params.userId;
-    User.ListFavorateBooks(userId, (err, favBooks, code) => {
-        if(err) {
-            res.status(500).json({ error: err });
-        } else {
-            res.status(code).json(favBooks);
-        }
-    });
-});
+// router.get('/:userId/favBooks', (req, res) => {
+//     const userId = req.params.userId;
+//     User.ListFavorateBooks(userId, (err, favBooks, code) => {
+//         if(err) {
+//             res.status(500).json({ error: err });
+//         } else {
+//             res.status(code).json(favBooks);
+//         }
+//     });
+// });
 
 
 

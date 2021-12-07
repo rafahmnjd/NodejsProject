@@ -9,19 +9,19 @@ class User {
         this.email = user.email;
         this.password = user.password;
         this.roleId = user.roleId;
-       
+
     }
 }
 //Get All
 
 User.getAll = (result) => {
     pool.query('SELECT * FROM user  ORDER BY id', (err, res) => {
-        if (err) {
+        if(err) {
             result(err, null);
-          
+
         } else {
             result(null, res);
-          
+
         }
     });
     var cachValue = cache.get(`allUsers`);
@@ -66,24 +66,24 @@ User.getById = (userId, result) => {
 //         pool.query(`SELECT * FROM user WHERE userName ="${userName}"`,(err,res)=>{
 //             if(err){
 //                 result(err,null,500);
-                
+
 //             }
 //             else{
 //                 if(res.length===0){
 //                     result(null,{},404);
-                    
+
 //                 }
 //                 else{
 //                     cache.set(`user+${userName}`, res[0]);
 //                     result(null,res[0],200);
-                    
+
 //                 }
 //             }
 //         });
 //     } else {
 //         result(null, cacheValue);
 //     }
-    
+
 // };
 User.getByName = (userName, result) => {
     cachValue = cache.get(`user${userName}`);
@@ -146,15 +146,7 @@ User.register = (user, result) => {
 
 // update
 
-User.updateUser = (userId,user, result) => {
-    pool.query(`UPDATE user  SET userName= "${user.userName}", email= "${user.email}" WHERE id = ${userId}`,(err, res) => {
-        if (err) {
-            result(err, null,500);
-        } else if(res.affectedRows===0){
-            result({ error: 'Record not found' }, null, 404);
-        } else {
-            cache.del(`user${userId}`);
-            result(null, { id: userId, userName: user.userName, email: user.email });
+
 User.updateUser = (userId, user, result) => {
     pool.query(`UPDATE user  SET userName= "${user.userName}", email= "${user.email}", roleId= "${user.roleId}" WHERE id = ${userId}`, (err, res) => {
         if(err) {
@@ -268,51 +260,51 @@ User.changePassword = (userId, newPassword, oldPassword, result) => {
     });
 };
 
-// get roleName
-// User.getRole =(roleId,result)=>{
-//     pool.query(`SELECT roleName FROM role r INNER JOIN user u ON r.id = u.roleId `,(err,res)=>{
-//         if(err){
+// // get roleName
+// // User.getRole =(roleId,result)=>{
+// //     pool.query(`SELECT roleName FROM role r INNER JOIN user u ON r.id = u.roleId `,(err,res)=>{
+// //         if(err){
 
-//             result(err,null,500);
-//             return;
-//         }
-//         else{
-//             if(res.length ===0){
-//                 result({error:"user is not exist"},null,404);
-//                 return;
+// //             result(err,null,500);
+// //             return;
+// //         }
+// //         else{
+// //             if(res.length ===0){
+// //                 result({error:"user is not exist"},null,404);
+// //                 return;
+// //             }
+// //             else{
+// //                 result(null,res[0],200);
+// //                 return;
+// //             }
+// //         }
+// //     })
+// // }
+
+// // login user
+// User.login =(userName,password,result)=>{
+//     pool.query(`SELECT * FROM user   WHERE userName ="${userName}"`,(err,res)=>{
+//         if(err) {
+//             result(err, null, 500);
+//             User.getRole = (roleId, result) => {
+//                 pool.query(`SELECT roleName FROM role r INNER JOIN user u ON r.id = u.roleId `, (err, res) => {
+//                     if(err) {
+
+//                         result({ error: err.sqlMessage }, null, 500);
+//                         return;
+//                     }
+//                     else {
+//                         if(res.length === 0) {
+//                             result({ error: "user is not exist" }, null, 404);
+//                             return;
+//                         }
+//                         else {
+//                             result(null, res[0], 200);
+//                             return;
+//                         }
+//                     }
+//                 })
 //             }
-//             else{
-//                 result(null,res[0],200);
-//                 return;
-//             }
-//         }
-//     })
-// }
-
-// login user
-User.login =(userName,password,result)=>{
-    pool.query(`SELECT * FROM user   WHERE userName ="${userName}"`,(err,res)=>{
-        if(err){
-            result(err,null,500);
-User.getRole = (roleId, result) => {
-    pool.query(`SELECT roleName FROM role r INNER JOIN user u ON r.id = u.roleId `, (err, res) => {
-        if(err) {
-
-            result({ error: err.sqlMessage }, null, 500);
-            return;
-        }
-        else {
-            if(res.length === 0) {
-                result({ error: "user is not exist" }, null, 404);
-                return;
-            }
-            else {
-                result(null, res[0], 200);
-                return;
-            }
-        }
-    })
-}
 
 // login user
 User.login = (userName, password, result) => {
@@ -349,128 +341,84 @@ User.login = (userName, password, result) => {
 };
 
 // get favbooks for user 
-User.getAllUserFavBook=(userId,result)=>{
-    
-    val = cache.get("favbooks"+userId);
+User.getAllUserFavBook = (userId, result) => {
 
-    if(val==undefined){
-    console.log(val)
-    pool.query(`SELECT DISTINCT f.id, b.title,f.favOrder, isRead FROM book b INNER JOIN  userbooksfav f ON f.userId =${userId} AND f.bookId =b.id ORDER BY F.favOrder ASC`,(err,res)=>{
-        //pool.query(`SELECT b.title,f.favOrder FROM book b INNER JOIN  userbooksfav f ON  f.bookId =b.id  AND  f.id =${favId} ORDER BY f.favOrder`,(err,res)=>{
-        if(err){
-            result(err,null,500);
-        
-        }
-        else{
-            if(res.length===0){
-                result(null,res,404);
-            
-            }
-            else{
-                
+    val = cache.get("favbooks" + userId);
 
-                
-                success = cache.set(`favbooks${userId}`,res);
-                console.log(success)
-                result(null,res,200);
+    if(val == undefined) {
+        console.log(val)
+        pool.query(`SELECT DISTINCT f.id, b.title,f.favOrder, isRead FROM book b INNER JOIN  userbooksfav f ON f.userId =${userId} AND f.bookId =b.id ORDER BY F.favOrder ASC`, (err, res) => {
+            //pool.query(`SELECT b.title,f.favOrder FROM book b INNER JOIN  userbooksfav f ON  f.bookId =b.id  AND  f.id =${favId} ORDER BY f.favOrder`,(err,res)=>{
+            if(err) {
+                result(err, null, 500);
+
             }
-        }
-    });
-    } 
-    else{
-        
-        
-        result(null,val,200);
-    }  
+            else {
+                if(res.length === 0) {
+                    result(null, res, 404);
+
+                }
+                else {
+
+
+
+                    success = cache.set(`favbooks${userId}`, res);
+                    console.log(success)
+                    result(null, res, 200);
+                }
+            }
+        });
+    }
+    else {
+
+
+        result(null, val, 200);
+    }
 };
 
 
-User.getAllUsersFavBook=(result)=>{
-    pool.query(`SELECT DISTINCT f.id, b.title,f.favOrder,f.isRead,u.userName FROM book b INNER JOIN user u INNER JOIN userbooksfav f ON f.userId =u.id AND f.bookId =b.id ORDER BY F.favOrder ASC`,(err,res)=>{
-        if(err){
-            result(err,null,500);
+User.getAllUsersFavBook = (result) => {
+    pool.query(`SELECT DISTINCT f.id, b.title,f.favOrder,f.isRead,u.userName FROM book b INNER JOIN user u INNER JOIN userbooksfav f ON f.userId =u.id AND f.bookId =b.id ORDER BY F.favOrder ASC`, (err, res) => {
+        if(err) {
+            result(err, null, 500);
         }
-        else{
-            if(res.length===0){
-                result(null,res,404);
+        else {
+            if(res.length === 0) {
+                result(null, res, 404);
             }
-            else{
-                result(null,res,200);
+            else {
+                result(null, res, 200);
             }
         }
     });
 };
 
-
-
-
-// User.createUserFavBook=(order,result)=>{
-//     pool.query(`INSERT INTO userbooksfav SET userId =${order.userId},bookId=${order.bookId}`,(err,res)=>{
-//         if(err){
-//             result(err,null);
-//         }
-//         else{
-//             result(null,Object.assign({id:res.insertId,order}));
-//         }
-//     });
-// }
 
 
 
 User.createUserFavBook=(order,result)=>{
-    pool.getConnection((err,conn)=>{
+    pool.query(`INSERT INTO userbooksfav SET userId =${order.userId},bookId=${order.bookId}`,(err,res)=>{
         if(err){
-            result(err,null,500);
+            result(err,null);
         }
         else{
-            conn.query(`SELECT distinct f.id,b.title FROM  userbooksfav f INNER JOIN book b ON  f.bookId =${order.bookId} AND f.userId =${order.userId}`,(errGet,resGet)=>{
-                if(errGet){
-                    conn.release();
-                    console.log(errGet)
-                    result(err,null,500);
-                }
-                else{
-                    console.log(resGet.length)
-                    if(resGet.length > 0){
-                        conn.release();
-                        result({error:resGet[0].title +" is already exist in favList"},null,400);
-                        
-                    
-                    }else{
-                        
-                        conn.query(`INSERT INTO userbooksfav SET userId =${order.userId},bookId=${order.bookId}`,(errin,resin)=>{
-                            conn.release();
-                            if(errin){
-                                throw errin
-                                result(err,null,500);
-                            }
-                            else{
-                                result(null,Object.assign({id:resin.insertId,userId:order.userId,bookId:order.bookId}),200);
-                            }
-                        });
-                        
-                    }
-
-                        
-                    
-                }
-            })
+            result(null,Object.assign({id:res.insertId,order}));
         }
     });
-    
 }
 
-User.updateUserFavOrder=(order,result)=>{
-     //pool.query(`UPDATE userbooksfav SET favOrder =${favOrder},isRead =${isRead} WHERE userId = ${userId} AND bookId = ${bookId}`,(err,res)=>{
-     pool.query(`UPDATE userbooksfav SET favOrder =${order.favOrder} WHERE id =${order.id}`,(err,res)=>{  
-    if(err){
-            result(err,null);
-            
+
+User.updateUserFavOrder = (order, result) => {
+    //pool.query(`UPDATE userbooksfav SET favOrder =${favOrder},isRead =${isRead} WHERE userId = ${userId} AND bookId = ${bookId}`,(err,res)=>{
+    pool.query(`UPDATE userbooksfav SET favOrder =${order.favOrder} WHERE id =${order.id}`, (err, res) => {
+        if(err) {
+            result(err, null);
+
         }
-        else{
-            result(null,{id :order.id,favOrder:order.favOrder});
+        else {
+            result(null, { id: order.id, favOrder: order.favOrder });
             cache.del(`favbooks${order.userId}`);
-            
+
         }
     });
 };
@@ -479,49 +427,31 @@ User.updateUserFavOrder=(order,result)=>{
 
 
 
-User.updateUserIsRead=(order,result)=>{
+User.updateUserIsRead = (order, result) => {
     //pool.query(`UPDATE userbooksfav SET favOrder =${favOrder},isRead =${isRead} WHERE userId = ${userId} AND bookId = ${bookId}`,(err,res)=>{
-    pool.query(`UPDATE userbooksfav SET isRead ='${order.isRead}' WHERE id =${order.id}`,(err,res)=>{  
-   if(err){
-           result(err,null);
-           
-       }
-       else{
-           result(null,{id :order.id,isRead:order.isRead});
-           cache.del(`favbooks${order.userId}`);
-           
-       }
-   });
-};
-User.deleteUserFavBook=(userId,favId,result)=>{
-   // pool.query(`UPDATE userbooksfav SET favOrder =${favOrder},isRead =${isRead} WHERE userId = ${userId} AND bookId = ${bookId}`,(err,res)=>{
-    pool.query(`DELETE FROM  userbooksfav  WHERE id = ${favId}`,(err,res)=>{  
-   if(err){
-            result(err,null);
+    pool.query(`UPDATE userbooksfav SET isRead ='${order.isRead}' WHERE id =${order.id}`, (err, res) => {
+        if(err) {
+            result(err, null);
+
         }
-        else{
-            result(null,res);
+        else {
+            result(null, { id: order.id, isRead: order.isRead });
+            cache.del(`favbooks${order.userId}`);
+
+        }
+    });
+};
+User.deleteUserFavBook = (userId, favId, result) => {
+    // pool.query(`UPDATE userbooksfav SET favOrder =${favOrder},isRead =${isRead} WHERE userId = ${userId} AND bookId = ${bookId}`,(err,res)=>{
+    pool.query(`DELETE FROM  userbooksfav  WHERE id = ${favId}`, (err, res) => {
+        if(err) {
+            result(err, null);
+        }
+        else {
+            result(null, res);
             cache.del(`favbooks${userId}`);
         }
     });
 };
-
-User.ListFavorateBooks = (userId, result) => {
-    cachValue = cache.get(`allFavBooks`);
-    if(cachValue == undefined) {
-        pool.query(`select * from book b join userbooksfav ubf on ubf.bookId = b.id where ubf.userId=${userId}`, (Qerr, favBooks) => {
-            if(Qerr) {
-                result({ error: Qerr.sqlMessage }, null, 500);
-            }
-            else {
-                cache.set(`allFavBooks`, favBooks);
-                result(null, favBooks, 200);
-            }
-        });
-    } else {
-        result(null, cachValue,200);
-    }
-}
-
 
 module.exports = User;

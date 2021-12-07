@@ -9,7 +9,7 @@ app.use(express.urlencoded({
     extended:true
 }));
 
-const auth = require('./middlewares/Authorization')
+const auth = require('./middlewares/Authorization');
 app.use(auth);
 // app.use(multer);
 const options ={

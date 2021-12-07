@@ -30,6 +30,7 @@ function ValidateModel(book) {
 router.get('/',(req, res) => {
     Book.getAll((err, bookRes) => {
         if(err) {
+            
             res.status(500).json({ error: err });
         } else {
             res.status(200).json(bookRes);
@@ -38,8 +39,8 @@ router.get('/',(req, res) => {
 });
 
 //Get all book except favbook for user 
-router.get('/login/:id',(req, res) => {
-    const userId = req.params.id;
+router.get('/unFav/',(req, res) => {
+    const userId = req.userId;
     if (isNaN(userId)) // isNaN (is Not a Number) is a function that verifies whether a given string is a normal number
         return res.status(400).send('id should be a number!');
 
@@ -219,33 +220,39 @@ function compressImage(img, result) {
 function deleteImage(fileName) {
     var split = fileName.split('/');
     imageName = split[split.length - 1];
-    fs.access(diskPath + imageName + ".gz", (err) => {
-        if(!err) {
-            fs.unlink(diskPath + imageName + ".gz", (err) => {
-                if(err) {
-                    console.error(err)
-                    return
-                }
-                console.log(`${imageName} was deleted`);
-            });
-        }
-    });
-    fs.access(clientPath + imageName, (err) => {
-        if(!err) {
-            fs.unlink(clientPath + imageName, (err) => {
-                if(err) {
-                    console.error(err)
-                    
-                } else {
+    if(split.length == 1) {
+        console.log('no valide file name');
+        result({ err: "no valide file name" }, null)
+    }
+    else {
+        fs.access(diskPath + imageName + ".gz", (err) => {
+            if(!err) {
+                fs.unlink(diskPath + imageName + ".gz", (err) => {
+                    if(err) {
+                        console.error(err)
+                        return
+                    }
                     console.log(`${imageName} was deleted`);
-                }
+                });
+            }
+        });
+        fs.access(clientPath + imageName, (err) => {
+            if(!err) {
+                fs.unlink(clientPath + imageName, (err) => {
+                    if(err) {
+                        console.error(err)
+                    
+                    } else {
+                        console.log(`${imageName} was deleted`);
+                    }
 
-            });
-        }
-        else {
-            console.error(err)
-        }
-    });
+                });
+            }
+            else {
+                console.error(err)
+            }
+        });
+    }
 }
 
 function decompressImage(fileName, result) {
